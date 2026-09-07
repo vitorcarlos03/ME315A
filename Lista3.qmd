@@ -1,0 +1,129 @@
+---
+title: "Lista3"
+format: pdf
+---
+
+```{r}
+library(DBI)
+library(RSQLite)
+con <- dbConnect(SQLite(), "me315.sqlite")
+```
+
+1. Exiba os valores de STATE e FEE da tabela PRESERVE mas sem duplicados.
+```{sql connection=con}
+SELECT 
+DISTINCT STATE, FEE 
+FROM PRESERVE
+```
+
+2. Exiba todos os valores de DNO na tabela EMPLOYEE. Não exiba valores duplicados.
+```{sql connection=con}
+SELECT 
+DISTINCT DNO 
+FROM EMPLOYEE
+```
+
+3. Execute as QUERYS a seguir. Examine as tabelas resultantes e faça as observações relevantes.
+    (i)   SELECT DNO, SALARY FROM EMPLOYEE
+    (ii)  SELECT DISTINCT DNO, SALARY FROM EMPLOYEE
+    (iii) SELECT DISTINCT DNO, SALARY FROM EMPLOYEE ORDER BY DNO, SALARY
+```{sql connection=con}
+SELECT DNO, SALARY 
+FROM EMPLOYEE
+```
+
+```{sql connection=con}
+SELECT 
+DISTINCT DNO, SALARY 
+FROM EMPLOYEE
+```
+
+```{sql connection=con}
+SELECT 
+DISTINCT DNO, SALARY 
+FROM EMPLOYEE 
+ORDER BY DNO, SALARY
+```
+
+4. Exiba todas as informações sobre qualquer reserva natural em Montana que seja menor que 1.000 acres.
+```{sql connection=con}
+SELECT * 
+FROM PRESERVE 
+WHERE STATE == 'MT' AND ACRES < 1000
+```
+
+5. Exiba todas as informações sobre qualquer reserva natural cujo valor de ACRES esteja entre 1200 e 15000, inclusive.
+```{sql connection=con}
+SELECT * FROM PRESERVE WHERE ACRES >= 1200 AND ACRES <= 15000
+```
+
+6. Exiba todas as informações sobre qualquer reserva natural localizada em Montana que não possua taxa de entrada e seja maior que 10.000 acres.
+```{sql connection=con}
+SELECT * FROM PRESERVE WHERE STATE == 'MT' AND FEE == 0 AND ACRES > 10000
+```
+
+7. Exiba todas as informações sobre as reservas naturais localizadas em Montana ou Massachusetts.
+```{sql connection=con}
+SELECT * FROM PRESERVE WHERE STATE == 'MT' OR STATE == 'MA'
+```
+
+8. Exiba todas as informações sobre qualquer reserva natural localizada em Montana ou qualquer reserva que seja menor que 1.000 acres.
+```{sql connection=con}
+SELECT * FROM PRESERVE WHERE STATE == 'MT' OR ACRES < 1000
+```
+
+9. Exiba o número e o nome de qualquer reserva natural que possua taxa de entrada que não seja igual a zero.
+```{sql connection=con}
+SELECT PNO, PNAME FROM PRESERVE WHERE NOT FEE == 0
+```
+
+10. Exiba o número e o nome das reservas naturais que não possuem taxa de entrada de US3,00 e não possuem taxa de US$ 10,00.
+```{sql connection=con}
+SELECT PNO, PNAME, FEE FROM PRESERVE WHERE FEE != 0 OR FEE != 10
+```
+
+11. Exiba todas as informações sobre qualquer reserva natural localizada no Arizona que não possua taxa de entrada, ou qualquer reserva que seja menor que 100 acres (independentemente de seus valores de STATE e FEE).
+```{sql connection=con}
+SELECT * FROM PRESERVE WHERE STATE == 'AZ' AND FEE == 0 OR ACRES < 1000
+```
+
+12. Exiba todas as informações sobre qualquer reserva natural que seja menor que 1.000 acres e tenha taxa de entrada de zero dólares ou esteja localizada no Arizona.
+```{sql connection=con}
+SELECT * FROM PRESERVE WHERE ACRES < 1000 AND FEE == 0 OR STATE == 'AZ'
+```
+
+13. Selecione todas as informações sobre qualquer reserva natural com taxa de entrada que não seja maior que zero, ou qualquer outra reserva, independentemente de sua taxa, que esteja localizada em Montana e seja maior que 1.000 acres.
+```{sql connection=con}
+SELECT * FROM PRESERVE WHERE NOT FEE > 0 OR STATE == 'MT' AND ACRES > 1000
+```
+
+14. Exiba todas as informações sobre todas as reservas naturais, exceto aquelas reservas de Montana sem taxa de entrada.
+```{sql connection=con}
+SELECT * FROM PRESERVE WHERE NOT FEE == 0
+```
+
+15. As seguintes cláusulas WHERE são logicamente equivalentes?
+    (i)   WHERE STATE = 'MA' AND (ACRES > 1000 OR FEE = 0.0)
+    (ii)  WHERE (STATE = 'MA' AND ACRES > 1000) OR (STATE = 'MA' AND FEE = 0.0)
+
+Não.
+
+16. As seguintes cláusulas WHERE são logicamente equivalentes?
+    (i)   WHERE STATE = 'MA' OR (ACRES > 1000 AND FEE = 0.0)
+    (ii)  WHERE (STATE = 'MA' OR ACRES > 1000) AND (STATE = 'MA' OR FEE = 0.0)
+
+Sim.
+
+17. As seguintes cláusulas WHERE são logicamente equivalentes?
+    (i)   WHERE NOT (ACRES < 50 AND STATE = 'MA')
+    (ii)  WHERE NOT ACRES < 50 AND NOT STATE = 'MA'
+    (iii) WHERE ACRES >= 50 OR STATE <> 'MA'
+
+Não.
+
+18. As seguintes cláusulas WHERE são logicamente equivalentes?
+    (i)   WHERE NOT (ACRES < 50 OR STATE = 'MA')
+    (ii)  WHERE NOT ACRES < 50 OR NOT STATE = 'MA'
+    (iii) WHERE NOT ACRES < 50 AND NOT STATE = 'MA'
+
+Não.

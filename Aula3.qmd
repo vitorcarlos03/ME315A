@@ -1,0 +1,151 @@
+---
+title: "Aula3"
+format: pdf
+---
+
+```{r}
+library(DBI)
+library(RSQLite)
+con <- dbConnect(SQLite(), "me315.sqlite")
+```
+
+Ordem: SELECT DISTINCT nome_das_colunas 
+FROM nome_da_tabela
+WHERE condicao
+ORDER BY nome_das_colunas
+LIMIT y
+
+
+Hierarquia
+Se não utilizarmos ( ), a ordem na qual a QUERY é executada será:
+  (i)   NOT
+  (ii)  AND
+  (iii) OR
+
+Dicas
+  (i)   C1 AND (C2 OR C3) = (C1 AND C2) OR (C1 AND C3)
+  (ii)  C1 OR (C2 AND C3) = (C1 OR C2) AND (C1 OR C3)
+  (iii) NOT (C1 AND C2) = (NOT C1) OR (NOT C2)
+  (iv)  NOT (C1 OR C2) = (NOT C1) AND (NOT C2)
+
+
+1. Recupere todas as linhas da tabela PRESERVE. Exiba apenas o valor de FEE para cada linha. Antes de executar a QUERY responda: é possível que valores duplicados apareçam neste resultado?
+Sim.
+```{sql connection=con}
+SELECT FEE 
+FROM PRESERVE
+```
+
+2. Recupere todas as linhas da tabela PRESERVE. Exiba apenas o valor de ACRES para cada linha. Antes de executar a QUERY responda: é possível que valores duplicados apareçam neste resultado?
+Não.
+```{sql connection=con}
+SELECT ACRES 
+FROM PRESERVE
+```
+
+3. Repetir 1 e 2, mas dessa vez não mostrar valores duplicados.
+```{sql connection=con}
+SELECT 
+DISTINCT FEE 
+FROM PRESERVE
+```
+
+4. Mostre os valores de FEE e ACRES referentes à tabela PRESERVE. Se existirem observações duplicadas, eliminá-las.
+```{sql connection=con}
+SELECT 
+DISTINCT FEE, ACRES 
+FROM PRESERVE
+```
+
+5. Compare as seguintes QUERYS:
+    (i)   SELECT PNO FROM PRESERVE
+    (ii)  SELECT DISTINCT PNO FROM PRESERVE
+    Observa alguma diferença?
+    Não.
+```{sql connection=con}
+SELECT PNO 
+FROM PRESERVE
+```
+
+```{sql connection=con}
+SELECT 
+DISTINCT PNO 
+FROM PRESERVE
+```
+    
+6. Exiba todas as informações sobre qualquer reserva natural localizada no Arizona e que não tenha taxa de entrada.
+```{sql connection=con}
+SELECT * 
+FROM PRESERVE 
+WHERE FEE != 0
+```
+
+7. Exiba todas as informações sobre qualquer reserva natural localizada no Arizona ou que não tenha taxa de entrada.
+```{sql connection=con}
+SELECT * 
+FROM PRESERVE 
+WHERE STATE == 'AZ' OR FEE != 0
+```
+
+8. Exiba os valores de PNO, PNAME e ACRES para qualquer reserva natural cujo valor de ACRES seja estritamente entre 90 e 1200.
+```{sql connection=con}
+SELECT PNO, PNAME, ACRES 
+FROM PRESERVE 
+WHERE ACRES > 90 AND ACRES < 1200
+```
+
+9. Exiba os valores de PNO, PNAME, FEE e ACRES de todas as reservas naturais localizadas no Arizona que possuem taxa de entrada diferente de zero e área maior ou igual a 660 acres e menor ou igual a 1.200 acres.
+```{sql connection=con}
+SELECT PNO, PNAME, FEE, ACRES 
+FROM PRESERVE 
+WHERE STATE == 'AZ' AND FEE <> 0 AND ACRES >= 660 AND ACRES < 1200
+```
+
+10. Exiba os valores de PNO, PNAME e STATE de todas as reservas naturais localizadas no Arizona ou em Montana.
+```{sql connection=con}
+SELECT PNO, PNAME, STATE 
+FROM PRESERVE 
+WHERE STATE == 'AZ' OR STATE == 'MT'
+```
+
+11. Exiba os valores de PNO e PNAME de qualquer reserva natural que possua um valor de PNO igual a qualquer um dos valores {3, 4, 7, 12, 40}.
+```{sql connection=con}
+SELECT PNO, PNAME 
+FROM PRESERVE 
+WHERE PNO == 3 OR PNO == 4 OR PNO == 7 OR PNO == 12 OR PNO == 40 
+```
+
+12. Exiba os valores de PNAME e STATE de todas as reservas naturais que não estão localizadas em Massachusetts.
+```{sql connection=con}
+SELECT PNAME, STATE 
+FROM PRESERVE 
+WHERE NOT STATE == 'MA'
+```
+
+13. Exiba os valores de PNAME, STATE, FEE e ACRES de qualquer reserva natural que tenha mais de 1.000 acres ou esteja localizada no Arizona, e que possua taxa de entrada de US$ 3,00 (independentemente de sua localização e extensão em acres).
+```{sql connection=con}
+SELECT PNAME, STATE, FEE, ACRES 
+FROM PRESERVE 
+WHERE (ACRES > 1000 OR STATE == 'AZ') AND FEE == 3
+```
+
+14. Exiba os valores de PNAME, STATE, FEE e ACRES de qualquer reserva natural com mais de 1.000 acres ou de qualquer reserva do Arizona com taxa de entrada de US$ 3,00.
+```{sql connection=con}
+SELECT PNAME, STATE, FEE, ACRES 
+FROM PRESERVE 
+WHERE ACRES > 1000 OR (STATE == 'AZ' AND FEE == 3)
+```
+
+15. Exiba os valores de PNO, STATE e FEE de todas as reservas naturais, exceto daquelas reservas que estão localizadas no Arizona e possuem taxa de entrada de US$ 3,00.
+```{sql connection=con}
+SELECT PNO, STATE, FEE 
+FROM PRESERVE 
+WHERE STATE != 'AZ' OR FEE != 3
+```
+
+16. Exiba os valores de PNAME, STATE, FEE e ACRES de todas as reservas que sejam menores que 50 acres, ou de qualquer reserva que possua taxa de entrada de US$ 3,00 e não esteja localizada em Massachusetts.
+```{sql connection=con}
+SELECT PNAME, STATE, FEE, ACRES 
+FROM PRESERVE 
+WHERE ACRES < 50 OR FEE == 3 AND NOT STATE == 'MA'
+```
