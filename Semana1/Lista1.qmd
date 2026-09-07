@@ -1,5 +1,0 @@
----
-title: "Lista1"
-format: html
----
-
