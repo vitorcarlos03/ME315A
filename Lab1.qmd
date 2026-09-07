@@ -1,0 +1,134 @@
+---
+title: "Laboratório 1 - ME315"
+format: pdf
+---
+
+1. Carregue o pacote tidyverse.
+```{r, message=FALSE}
+library(tidyverse)
+```
+
+2. Está no formato tidy?
+
+Table1: sim.
+```{r}
+table1
+```
+
+Table2: não.
+```{r}
+table2
+```
+
+Table3: não.
+```{r}
+table3
+```
+
+Table4a: não
+```{r}
+table4a
+```
+
+Table4b: não.
+```{r}
+table4b
+```
+
+3. Utilizando comandos do pacote dplyr, determine a taxa de ocorrência de tuberculose para cada 10.000 pessoas. Armazene o resultado em um objeto chamado taxas.
+```{r}
+library(dplyr)
+```
+
+```{r}
+taxas <- table1 %>% mutate(taxa = 10000*cases/population)
+taxas
+```
+
+4. Apresente, utilizando comandos do pacote dplyr, o número de casos de tuberculose por ano.
+```{r}
+casos_por_ano <- table1 %>% select(year, cases) %>% group_by(year) %>% summarize(numero_casos_ano = sum(cases))
+casos_por_ano
+```
+
+5. Apresente, utilizando comandos do pacote dplyr, o número de casos de tuberculose identificados em cada país.
+```{r}
+casos_por_pais <- table1 %>% select(country, cases) %>% group_by(country) %>% summarize(numero_casos_pais = sum(cases))
+casos_por_pais
+```
+
+6. Utilizando comandos do pacote dplyr, apresente uma tabela que descreva a mudança no número de casos, em cada país, ao longo dos anos de 1999 e 2000.
+```{r}
+diferenca_casos_por_pais <- table1 %>% select(country,cases,year) %>% group_by(country) %>% summarize(diferenca = diff(cases))
+diferenca_casos_por_pais
+```
+
+7. Apresente um gráfico de linhas, preparado via ggplot2, apresentando a mudança na taxa de casos (por 10.000 habitantes) estratificado por país.
+```{r}
+library(ggplot2)
+```
+
+```{r}
+ggplot(taxas, aes(x = year, y = taxa, color = country)) +
+  geom_line() +
+  scale_x_continuous(breaks = c(1999, 2000)) +
+  labs(x = "Ano", y = "Taxa", color = "País")
+```
+
+8. Calcule a taxa para as tabelas table2 e table4a+table4b. Para isso, você precisará executar 4 passos:
+    (i)   Extrair o número de casos de tuberculose por país, por ano;
+    (ii)  Extrair o tamanho da população correspondente, por ano;
+    (iii) Dividir o número de casos pelo tamanho da população e multiplicar o resultado por 10.000;
+    (iv)  Armazenar o resultado numa variável apropriada.
+    
+Table2:
+```{r}
+taxa_table2 <- table2 %>% 
+  pivot_wider(
+    names_from = type,
+    values_from = count
+  )
+taxa_table2 <- taxa_table2 %>% mutate(taxa = 10000*cases/population)
+taxa_table2
+```
+
+Table4a+Table4b
+```{r}
+taxa_table4a <- table4a %>% 
+  pivot_longer(
+    cols = c("1999","2000"),
+    names_to = "year",
+    values_to = "cases"
+  )
+
+taxa_table4b <- table4b %>%
+  pivot_longer(
+    cols = c("1999","2000"),
+    names_to = "year",
+    values_to = "population"
+  )
+
+taxa_table4a
+taxa_table4b
+
+uniao <- taxa_table4a %>%
+  left_join(taxa_table4b, by = c("country","year"))
+
+taxa_table4ab <- uniao %>% mutate(taxa = 10000*cases/population)
+taxa_table4ab
+```
+
+14. Observe que a coluna rate do objeto table3 é um texto mostrando a fração que formaria a taxa de casos de tuberculose. Transforme o objeto table3 em um objeto com formato tidy separando a coluna 3 em duas outras colunas: cases e population, utilizando o comando separate. Utilize o argumento convert para transformar o resultado em um objeto numérico.
+```{r}
+new_table3 <- table3 %>% separate(rate, into = c("cases","populacion"), sep="/")
+new_table3
+```
+
+
+
+
+
+
+
+
+
