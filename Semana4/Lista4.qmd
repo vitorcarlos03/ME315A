@@ -7,7 +7,7 @@ format: pdf
 ```{r}
 library(DBI)
 library(RSQLite)
-con <- dbConnect(SQLite(), "me315.sqlite")
+con <- dbConnect(SQLite(), "datasets/me315.sqlite")
 ```
 
 Os seguintes exercícios utilizam a tabela PRESERVE.
